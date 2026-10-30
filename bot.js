@@ -30,8 +30,10 @@ function startBot() {
     port: config.port,
     username: config.username,
     version: config.version,
-    auth: 'offline'
+    auth: 'offline',
+    checkTimeoutInterval: 60000 // Prevents premature connection dropping
   });
+
 
   bot.on('spawn', () => {
     console.log(`[${new Date().toLocaleTimeString()}] Bot joined! Anti-AFK routine active.`);
