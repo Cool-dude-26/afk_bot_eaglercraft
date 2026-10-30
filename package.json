@@ -1,0 +1,13 @@
+{
+  "name": "falix-afk-bot",
+  "version": "1.0.0",
+  "description": "24/7 MC Bot for Render",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "mineflayer": "^4.20.0"
+  }
+}
