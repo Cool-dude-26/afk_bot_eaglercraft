@@ -15,11 +15,12 @@ app.listen(PORT, () => {
 
 // 2. MINEFLAYER BOT CONFIGURATION
 const config = {
-  host: 'YOUR_FALIX_SERVER_IP_OR_SUBDOMAIN', // Use numeric IP or direct node address (no wss://)
-  port: YOUR_FALIX_PORT,                       // Your numeric port (e.g. 25565)
-  username: 'Falix_Keeper_Bot',
+  host: process.env.MC_HOST || 'localhost', // Reads from Render environment variables
+  port: parseInt(process.env.MC_PORT) || 25565, // Converts the port string to a number
+  username: process.env.MC_USER || 'Falix_Keeper_Bot',
   version: '1.20.2'
 };
+
 
 function startBot() {
   console.log(`[${new Date().toLocaleTimeString()}] Connecting to ${config.host}:${config.port}...`);
