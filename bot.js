@@ -48,7 +48,7 @@ function startBot() {
 
   bot.on('end', (reason) => {
     console.log(`Disconnected. Reason: ${reason}. Reconnecting in 10 seconds...`);
-    setTimeout(startBot, 10000);
+    setTimeout(startBot, 60000);
   });
 
   bot.on('error', (err) => {
