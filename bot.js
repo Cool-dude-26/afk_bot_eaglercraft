@@ -18,7 +18,8 @@ const config = {
   host: process.env.MC_HOST,                       // no silent fallback: we want to notice if it's missing
   port: parseInt(process.env.MC_PORT, 10) || 25565, // 10 = base 10 (always pass it to parseInt)
   username: process.env.MC_USER || 'Falix_Keeper_Bot',
-  version: process.env.MC_VERSION || '1.20.2'
+  version: process.env.MC_VERSION || '1.20.2',
+  password: process.env.MC_PASSWORD || '123456'
 };
 
 // 3. RECONNECT WITH EXPONENTIAL BACKOFF
@@ -64,14 +65,32 @@ function startBot() {
   // and on() would stack a new anti-AFK timer each time.
   bot.once('spawn', () => {
     attempt = 0; // connected successfully, so reset the backoff
-    console.log(`[${new Date().toLocaleTimeString()}] Bot joined! Anti-AFK routine active.`);
+    console.log(`[${new Date().toLocaleTimeString()}] Bot joined.`);
 
+    // LoginSecurity auto-login: the bot must already be registered on the
+    // server (run /register <password> <password> as the bot once, manually,
+    // before relying on this). A short delay gives the server time to finish
+    // sending the join packets before we chat.
+    if (config.password) {
+      setTimeout(() => {
+        bot.chat(`/login ${config.password}`);
+        console.log(`[${new Date().toLocaleTimeString()}] Sent /login`);
+      }, 3000);
+    }
+
+    console.log(`[${new Date().toLocaleTimeString()}] Anti-AFK routine active.`);
     afkInterval = setInterval(() => {
       if (!bot.entity) return;
       bot.swingArm('right');
       bot.setControlState('jump', true);
       setTimeout(() => bot.setControlState('jump', false), 500);
     }, 45000);
+  });
+
+  // Prints server messages (e.g. LoginSecurity's "Successfully logged in!"
+  // or "Wrong password!") to the Render logs so you can confirm it worked.
+  bot.on('message', (jsonMsg) => {
+    console.log('Server says:', jsonMsg.toString());
   });
 
   bot.on('kicked', (reason) => {
