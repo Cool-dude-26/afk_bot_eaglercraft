@@ -79,12 +79,29 @@ function startBot() {
     }
 
     console.log(`[${new Date().toLocaleTimeString()}] Anti-AFK routine active.`);
+
+    // The bot sits in a tight 1x1x3 enclosure, so no walking (it would just
+    // push against bedrock). Essentials-style AFK plugins fire their
+    // "player moved" check on rotation too, not just position, so looking
+    // around is enough and stays perfectly safe here.
     afkInterval = setInterval(() => {
       if (!bot.entity) return;
+
+      const yaw = Math.random() * Math.PI * 2;   // full circle, radians
+      const pitch = (Math.random() - 0.5) * 1.0; // look up/down a bit
+      bot.look(yaw, pitch, true);
+
       bot.swingArm('right');
-      bot.setControlState('jump', true);
-      setTimeout(() => bot.setControlState('jump', false), 500);
-    }, 45000);
+
+      // Sneak on, then off a moment later - a distinct input packet from
+      // look/swing, still doesn't move the bot's position.
+      bot.setControlState('sneak', true);
+      setTimeout(() => bot.setControlState('sneak', false), 500);
+
+      // Cycle the held hotbar slot (0-8) - another distinct, silent packet.
+      const nextSlot = (bot.quickBarSlot + 1) % 9;
+      bot.setQuickBarSlot(nextSlot);
+    }, 15000);
   });
 
   // Prints server messages (e.g. LoginSecurity's "Successfully logged in!"
